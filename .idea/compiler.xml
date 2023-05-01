@@ -6,6 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="KodlamaioWebsiteWorkshop" />
+        <module name="EmployeeManagementWorkshop" />
         <module name="GameSalesWorkshop" />
         <module name="Ecommerce" />
         <module name="RestaurantWorkshop" />
@@ -14,8 +16,6 @@
         <module name="BookingWorkshop" />
         <module name="InmemoryEcommerceWorkshop" />
         <module name="AdapternPatternWorkshop" />
-        <module name="KodlamaioWebsiteWorkshop" />
-        <module name="EmployeeManagementWorkshop" />
         <module name="AlgorithmWorkshop" />
       </profile>
     </annotationProcessing>

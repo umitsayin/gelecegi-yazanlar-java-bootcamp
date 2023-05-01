@@ -23,4 +23,6 @@ Req 8 : Ürünler listelenirken bir parametre kullanılmalıdır. Bu parametre i
 
 Req 9 : Ürünlerin satışı için bir Sale servisi yazılmalıdır. Ürünün stokta olup olmadığını ve aktif durumda olup olmadığı kontrol edilmelidir.
 
-Req 10 : Ürünün satılabilmesi için Payment servisi yazılmalıdır. Bu servis, müşterinin ödeme bilgilerini kontrol etmeli ve ödeme işlemini gerçekleştirmelidir.Req 6 : Ürün satışı sonrası fatura müşteriye gönderilmelidir. Bu işlem simüle edilebilir.
+Req 10 : Ürünün satılabilmesi için Payment servisi yazılmalıdır. Bu servis, müşterinin ödeme bilgilerini kontrol etmeli ve ödeme işlemini gerçekleştirmelidir.
+
+Req 11 : Ürün satışı sonrası fatura müşteriye gönderilmelidir. Bu işlem simüle edilebilir.

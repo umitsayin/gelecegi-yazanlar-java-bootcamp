@@ -1,70 +1,84 @@
 package com.turkcell.ecommerce.service.impl;
 
+import com.turkcell.ecommerce.api.request.ProductRequest;
+import com.turkcell.ecommerce.api.response.CategoryResponse;
+import com.turkcell.ecommerce.api.response.ProductResponse;
+import com.turkcell.ecommerce.entities.Category;
 import com.turkcell.ecommerce.entities.Product;
 import com.turkcell.ecommerce.repository.ProductRepository;
+import com.turkcell.ecommerce.service.CategoryService;
 import com.turkcell.ecommerce.service.ProductService;
+import com.turkcell.ecommerce.service.rules.ProductServiceRules;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
+    private final ModelMapper modelMapper;
+    private final CategoryService categoryService;
+    private final ProductRepository repository;
+    private final ProductServiceRules rules;
 
-    private final ProductRepository productRepository;
+    @Override
+    public List<ProductResponse> getAll() {
+        List<ProductResponse> response = repository.findAll().stream()
+                .map(product -> modelMapper.map(product, ProductResponse.class))
+                .toList();
 
-    public ProductServiceImpl(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+        return response;
     }
 
     @Override
-    public List<Product> getAll() {
-        return productRepository.findAll();
+    public ProductResponse getById(int id) {
+        rules.checkIfProductExistsByID(id);
+
+        ProductResponse response = modelMapper.map(repository.findById(id), ProductResponse.class);
+
+        return response;
     }
 
     @Override
-    public Product getById(int id) {
-        return productRepository.getById(id);
+    public ProductResponse add(ProductRequest request) {
+        rules.checkIfProductExistsByName(request.getName());
+
+        Product product = modelMapper.map(request, Product.class);
+        product.setId(0);
+        setCategoryToProduct(request.getCategoryIds(), product);
+        repository.save(product);
+
+        ProductResponse response = modelMapper.map(product, ProductResponse.class);
+
+        return response;
     }
 
     @Override
-    public Product add(Product product) {
-        validateProduct(product);
+    public ProductResponse updateById(int id, ProductRequest request) {
+        rules.checkIfProductExistsByID(id);
 
-        return productRepository.save(product);
-    }
+        Product product = modelMapper.map(request, Product.class);
+        product.setId(id);
+        setCategoryToProduct(request.getCategoryIds(), product);
+        repository.save(product);
 
-    @Override
-    public Product update(int id, Product product) {
-        validateProduct(product);
-        return productRepository.save(product);
+        ProductResponse response = modelMapper.map(product, ProductResponse.class);
+
+        return response;
     }
 
     @Override
     public void deleteById(int id) {
-        productRepository.deleteById(id);
+        rules.checkIfProductExistsByID(id);
+        repository.deleteById(id);
     }
 
-    private void validateProduct(Product product) {
-        checkIfUnitPriceValid(product);
-        checkIfQuantityValid(product);
-        checkIfDescriptionValid(product);
-    }
-
-    private void checkIfUnitPriceValid(Product product) {
-        if (product.getUnitPrice() <= 0) {
-            throw new IllegalArgumentException("Price cannot be less than or equal to 0");
-        }
-    }
-
-    private void checkIfQuantityValid(Product product) {
-        if (product.getQuantity() < 0) {
-            throw new IllegalArgumentException("Quantity cannot be less than 0");
-        }
-    }
-
-    private void checkIfDescriptionValid(Product product) {
-        if (product.getDescription().length() < 10 || product.getDescription().length() > 50 ) {
-            throw new IllegalArgumentException("Description length must be between 10 and 50 characters");
-        }
+    private void setCategoryToProduct(List<Integer> categoryIds, Product product){
+        categoryIds.stream().forEach(categoryId-> {
+            product.getCategories().add(modelMapper.map(categoryService.getById(categoryId), Category.class));
+        });
     }
 }
