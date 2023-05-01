@@ -17,12 +17,8 @@ I
 AlgorithmWorkshop/pom.xml,d/1/d1b34ca32f847739cd8c5dcefb61421a53a144cf
 T
 $rent-a-car/docker/docker-compose.yml,f/3/f3ebcdb60ead55f21900b9d36cda2d8a1dc4858c
-g
-7RestaurantWorkshop/src/main/java/com/turkcell/Main.java,e/a/ea2df738f9cfad069158f08ac5b5ebf3f1a361ad
 J
 RestaurantWorkshop/pom.xml,8/7/873e900cb9c0c273e1ba67b20c5a6b553c692f10
-L
-RestaurantWorkshop/README.md,5/f/5f614778bcfcee72d99ac0499287f5ec5f057ca9
 f
 6AlgorithmWorkshop/src/main/java/com/turkcell/Main.java,9/f/9fc565037d4b4606ed6db82e512d890fc31781ae
 9
