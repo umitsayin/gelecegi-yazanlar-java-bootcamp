@@ -1,0 +1,112 @@
+package com.turkcellcamp.rentacar.business.concretes;
+
+import com.turkcellcamp.rentacar.business.abstracts.CarService;
+import com.turkcellcamp.rentacar.business.abstracts.MaintenanceService;
+import com.turkcellcamp.rentacar.business.dto.requests.create.CreateMaintenanceRequest;
+import com.turkcellcamp.rentacar.business.dto.requests.update.UpdateMaintenanceRequest;
+import com.turkcellcamp.rentacar.business.dto.responses.create.CreateMaintenanceResponse;
+import com.turkcellcamp.rentacar.business.dto.responses.get.GetAllMaintenancesResponse;
+import com.turkcellcamp.rentacar.business.dto.responses.get.GetMaintenanceResponse;
+import com.turkcellcamp.rentacar.business.dto.responses.update.UpdateMaintenanceResponse;
+import com.turkcellcamp.rentacar.business.rules.MaintenanceManagerRules;
+import com.turkcellcamp.rentacar.entities.Maintenance;
+import com.turkcellcamp.rentacar.entities.enums.State;
+import com.turkcellcamp.rentacar.repository.MaintenanceRepository;
+import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+@AllArgsConstructor
+public class MaintenanceManager implements MaintenanceService {
+    private final MaintenanceRepository repository;
+    private final ModelMapper mapper;
+    private final CarService carService;
+    private final MaintenanceManagerRules rules;
+
+    @Override
+    public List<GetAllMaintenancesResponse> getAll() {
+        List<Maintenance> maintenances = repository.findAll();
+        List<GetAllMaintenancesResponse> response = maintenances
+                .stream()
+                .map(maintenance -> mapper.map(maintenance, GetAllMaintenancesResponse.class))
+                .toList();
+
+        return response;
+    }
+
+    @Override
+    public GetMaintenanceResponse getById(int id) {
+        rules.checkIfMaintenanceExists(id);
+
+        Maintenance maintenance = repository.findById(id).orElseThrow();
+        GetMaintenanceResponse response = mapper.map(maintenance, GetMaintenanceResponse.class);
+
+        return response;
+    }
+
+    @Override
+    public GetMaintenanceResponse returnCarFromMaintenance(int carId) {
+        rules.checkIfCarIsNotUnderMaintenance(carId);
+
+        Maintenance maintenance = repository.findByCarIdAndIsCompletedIsFalse(carId);
+        maintenance.setCompleted(true);
+        maintenance.setEndDate(LocalDateTime.now());
+
+        repository.save(maintenance);
+        carService.changeState(carId, State.AVAILABLE);
+
+        GetMaintenanceResponse response = mapper.map(maintenance, GetMaintenanceResponse.class);
+
+        return response;
+    }
+
+    @Override
+    public CreateMaintenanceResponse add(CreateMaintenanceRequest request) {
+        rules.checkIfCarUnderMaintenance(request.getCarId());
+        rules.checkCarAvailabilityForMaintenance(carService.getById(request.getCarId()).getState());
+
+        Maintenance maintenance = mapper.map(request, Maintenance.class);
+        maintenance.setId(0);
+        maintenance.setCompleted(false);
+        maintenance.setStartDate(LocalDateTime.now());
+        maintenance.setEndDate(null);
+
+        repository.save(maintenance);
+        carService.changeState(request.getCarId(), State.MAINTENANCE);
+
+        CreateMaintenanceResponse response = mapper.map(maintenance, CreateMaintenanceResponse.class);
+
+        return response;
+    }
+
+    @Override
+    public UpdateMaintenanceResponse update(int id, UpdateMaintenanceRequest request) {
+        rules.checkIfMaintenanceExists(id);
+
+        Maintenance maintenance = mapper.map(request, Maintenance.class);
+        maintenance.setId(id);
+        repository.save(maintenance);
+
+        UpdateMaintenanceResponse response = mapper.map(maintenance, UpdateMaintenanceResponse.class);
+
+        return response;
+    }
+
+    @Override
+    public void delete(int id) {
+        rules.checkIfMaintenanceExists(id);
+        makeCarAvailableIfIsCompletedFalse(id);
+        repository.deleteById(id);
+    }
+
+    private void makeCarAvailableIfIsCompletedFalse(int id) {
+        int carId = repository.findById(id).get().getCar().getId();
+        if (repository.existsByCarIdAndIsCompletedIsFalse(carId)) {
+            carService.changeState(carId, State.AVAILABLE);
+        }
+    }
+}
