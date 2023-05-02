@@ -75,7 +75,6 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void processSalePayment(CreateSalePaymentRequest request) {
         rules.checkIfPaymentRequestValid(request);
-        rules.checkIfPaymentExistsByCardNumber(request.getCardNumber());
 
         Payment payment = repository.findByCardNumber(request.getCardNumber());
         rules.checkIfPaymentBalance(request.getPrice(),request.getCardNumber());

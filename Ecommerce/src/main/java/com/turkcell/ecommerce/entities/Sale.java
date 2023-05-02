@@ -21,7 +21,7 @@ public class Sale extends BaseEntity{
     private String description;
     private double totalPrice;
 
-    @OneToOne(mappedBy = "sale")
+    @OneToOne
     private Invoice invoice;
 
     @OneToMany

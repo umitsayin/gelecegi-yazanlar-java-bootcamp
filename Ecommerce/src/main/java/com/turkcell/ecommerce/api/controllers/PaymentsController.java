@@ -3,6 +3,7 @@ package com.turkcell.ecommerce.api.controllers;
 import com.turkcell.ecommerce.api.request.PaymentRequest;
 import com.turkcell.ecommerce.api.response.PaymentResponse;
 import com.turkcell.ecommerce.service.PaymentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +28,12 @@ public class PaymentsController {
     }
 
     @PostMapping
-    public ResponseEntity<PaymentResponse> add(@RequestBody PaymentRequest request){
+    public ResponseEntity<PaymentResponse> add(@Valid @RequestBody PaymentRequest request){
         return ResponseEntity.ok(paymentService.add(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PaymentResponse> update(@PathVariable int id, @RequestBody PaymentRequest request){
+    public ResponseEntity<PaymentResponse> update(@PathVariable int id, @Valid @RequestBody PaymentRequest request){
         return ResponseEntity.ok(paymentService.updateByID(id,request));
     }
 

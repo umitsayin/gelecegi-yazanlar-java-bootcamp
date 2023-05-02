@@ -14,10 +14,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Invoice extends BaseEntity{
     private String description;
-    private String categoryName;
-    private String productName;
     private String totalPrice;
 
-    @OneToOne
+    @OneToOne(mappedBy = "invoice")
     private Sale sale;
 }

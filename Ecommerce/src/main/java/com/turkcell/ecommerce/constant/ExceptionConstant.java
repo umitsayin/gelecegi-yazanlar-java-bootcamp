@@ -9,6 +9,9 @@ public class ExceptionConstant {
     public static String PAYMENT_ALREADY_EXISTS = "Payment already exists!";
     public static String PAYMENT_IS_NOT_VALID = "Payment information is not valid!";
     public static String BALANCE_INSUFFICIENT = "Payment failed";
+    public static String INVOICE_NOT_FOUND = "Invoice not found!";
+    public static String SALE_NOT_FOUND = "Sale not found!";
+
 
 
     private ExceptionConstant(){
