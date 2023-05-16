@@ -15,7 +15,7 @@ class BrandManagerRulesTest {
 
     @BeforeEach
     public void setUp(){
-        repository = mock(BrandRepository.class);
+        repository = mock(BrandRepository.class); //davranı sen belirle
         brandManagerRules = new BrandManagerRules(repository);
     }
 
